@@ -4,7 +4,7 @@ import websocket
 import rel
 
 def on_message(ws, message):
-    print()
+    print(decode(message))
 
 def on_error(ws, error):
     print(error)
@@ -16,11 +16,52 @@ def on_open(ws):
     print("### opened ###")
     ws.send('{"a":111}')
 
+def decode(s: str) -> str:
+    # Dictionary für neue Codes
+    dictionary = {}
+
+    # Aufspalten in einzelne Zeichen
+    chars = list(s)
+
+    # Initialwerte
+    c = chars[0]
+    prev = c
+    output = [c]
+
+    # Startwert für neue Einträge
+    next_code = 256
+
+    # Schleife über die restlichen Zeichen
+    for i in range(1, len(chars)):
+        code = ord(chars[i])
+
+        # Bestimme den aktuellen String 'entry'
+        if code < 256:
+            entry = chars[i]
+        elif code in dictionary:
+            entry = dictionary[code]
+        else:
+            # Sonderfall bei LZW: code noch nicht im Dictionary
+            entry = prev + c
+
+        output.append(entry)
+
+        # Erstes Zeichen des aktuellen Eintrags
+        c = entry[0]
+
+        # Neuen Eintrag ins Dictionary hinzufügen
+        dictionary[next_code] = prev + c
+        next_code += 1
+
+        prev = entry
+
+    return "".join(output)
+
 
 def main():
 
-    websocket.enableTrace(True)
-    ws = websocket.WebSocketApp("wss://ws1.blitzortung.org/",
+    # websocket.enableTrace(True)
+    ws = websocket.WebSocketApp("wss://ws7.blitzortung.org/",
                                 on_open=on_open,
                                 on_message=on_message,
                                 on_error=on_error,
