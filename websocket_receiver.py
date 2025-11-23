@@ -2,6 +2,7 @@
 
 import websocket
 import rel
+from database_helper import *
 
 def on_message(ws, message):
     print(decode(message))
