@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Float, BigInteger, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, Float, BigInteger, ForeignKey, text
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, joinedload
 
 # Basisklasse für unsere ORM-Modelle
@@ -137,3 +137,34 @@ class DBHelper:
         with self.Session() as session:
             measurements = session.query(Measurement).options(joinedload(Measurement.signals)).all()
             return [self._to_dict(m) for m in measurements]
+
+    def get_row_count(self):
+        """
+        Gibt die Gesamtzahl der Einträge in der 'measurements'-Tabelle zurück.
+        """
+        with self.Session() as session:
+            count = session.query(Measurement).count()
+        return count
+
+    def get_database_size(self, pretty=False):
+        """
+        Gibt die Größe der Datenbank zurück.
+
+        :param pretty: Wenn True, wird ein formatierter String (z.B. "16 MB") zurückgegeben.
+                       Wenn False, wird die Größe in Megabyte als Fließkommazahl zurückgegeben.
+        :return: Die Datenbankgröße als String oder Float.
+        """
+        with self.Session() as session:
+            db_name = self.engine.url.database
+
+            if pretty:
+                sql = text("SELECT pg_size_pretty(pg_database_size(:db_name))")
+            else:
+                # Berechnet die Größe in MB
+                sql = text("SELECT pg_database_size(:db_name) / (1024 * 1024.0)")
+
+            result = session.execute(sql, {"db_name": db_name})
+
+            size = result.scalar_one()
+
+        return size
