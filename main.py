@@ -45,7 +45,7 @@ def main():
     print(f"Insgesamt {len(all_entries)} Einträge gefunden.")
     # Nur den ersten Eintrag ausgeben, um die Ausgabe kurz zu halten
     if all_entries:
-        print(json.dumps(all_entries[0], indent=2))
+        print(json.dumps(all_entries, indent=2))
 
 
 if __name__ == "__main__":
