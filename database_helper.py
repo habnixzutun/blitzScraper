@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, Float, BigInteger, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker, joinedload
 
 # Basisklasse für unsere ORM-Modelle
 Base = declarative_base()
@@ -106,3 +106,23 @@ class DBHelper:
                 print(f"Datensatz mit ID {measurement_id} wurde entfernt.")
             else:
                 print(f"Datensatz mit ID {measurement_id} nicht gefunden.")
+
+    def get_row_by_id(self, measurement_id):
+        """
+        Holt einen einzelnen Datensatz anhand seiner ID, inklusive der zugehörigen Signale.
+        Gibt ein Dictionary oder None zurück.
+        """
+        with self.Session() as session:
+            # .options(joinedload(...)) sorgt für eine effiziente Abfrage mit JOIN.
+            # .get() ist optimiert für die Suche nach Primärschlüsseln.
+            measurement = session.query(Measurement).options(joinedload(Measurement.signals)).get(measurement_id)
+            return self._to_dict(measurement)
+
+    def get_all_rows(self):
+        """
+        Holt alle Datensätze, inklusive der zugehörigen Signale.
+        Gibt eine Liste von Dictionaries zurück.
+        """
+        with self.Session() as session:
+            measurements = session.query(Measurement).options(joinedload(Measurement.signals)).all()
+            return [self._to_dict(m) for m in measurements]
