@@ -2,12 +2,11 @@ from database_helper import DBHelper
 import os
 import json
 
-# Die Verbindungs-URL hat das Format:
-# dialect+driver://username:password@host:port/database
-
 pw = os.getenv("PASSWD")
 usr = os.getenv("USR")
-db_url = f"postgresql+psycopg2://{usr}:{pw}@localhost:5433/blitzData"
+server = os.getenv("SERVER")  # domain or ip
+port = os.getenv("PORT")
+db_url = f"postgresql+psycopg2://{usr}:{pw}@{server}:{port}/blitzData"
 
 
 # Ihr Beispieldatensatz (unverändert)
@@ -23,29 +22,15 @@ example_data = {
 
 def main():
     db = DBHelper(db_url)
-    db.initialize()
     db.clear()
 
-    # Fügen wir zwei Einträge hinzu, um die Abfragen zu testen
-    print("--- Füge Daten hinzu ---")
-    id1 = db.add_row(example_data)
-    # Kleiner Unterschied für den zweiten Datensatz
-    example_data_2 = example_data.copy()
-    example_data_2['lat'] = 18.0
-    id2 = db.add_row(example_data_2)
-
-    # --- Test der neuen Funktionen ---
-    print("\n--- Hole einzelnen Eintrag ---")
-    single_entry = db.get_row_by_id(id1)
-    if single_entry:
-        print(json.dumps(single_entry, indent=2))
 
     print("\n--- Hole alle Einträge ---")
     all_entries = db.get_all_rows()
     print(f"Insgesamt {len(all_entries)} Einträge gefunden.")
-    # Nur den ersten Eintrag ausgeben, um die Ausgabe kurz zu halten
     if all_entries:
         print(json.dumps(all_entries, indent=2))
+
 
 
 if __name__ == "__main__":

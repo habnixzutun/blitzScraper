@@ -1,11 +1,14 @@
 #!/usr/bin/python
+import os
 
 import websocket
 import rel
 from database_helper import *
+import json
 
 def on_message(ws, message):
     print(decode(message))
+    db.add_row(json.loads(decode(message)))
 
 def on_error(ws, error):
     print(error)
@@ -75,4 +78,11 @@ def main():
 
 
 if __name__ == '__main__':
+    pw = os.getenv("PASSWD")
+    usr = os.getenv("USR")
+    server = os.getenv("SERVER")  # domain or ip
+    port = os.getenv("PORT")
+
+    db_url = f"postgresql+psycopg2://{usr}:{pw}@{server}:{port}/blitzData"
+    db = DBHelper(db_url)
     main()
