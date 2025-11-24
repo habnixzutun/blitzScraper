@@ -22,14 +22,15 @@ example_data = {
 
 def main():
     db = DBHelper(db_url)
-    db.clear()
 
 
     print("\n--- Hole alle Einträge ---")
     all_entries = db.get_all_rows()
     print(f"Insgesamt {len(all_entries)} Einträge gefunden.")
+    """
     if all_entries:
         print(json.dumps(all_entries, indent=2))
+    """
 
 
 
