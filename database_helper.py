@@ -56,6 +56,17 @@ class DBHelper:
         # Session-Factory, um mit der Datenbank zu kommunizieren
         self.Session = sessionmaker(bind=self.engine)
 
+    def _to_dict(self, measurement):
+        """Wandelt ein Measurement-Objekt in ein Dictionary um."""
+        if not measurement:
+            return None
+        data = {c.name: getattr(measurement, c.name) for c in measurement.__table__.columns}
+        data['signals'] = [
+            {c.name: getattr(signal, c.name) for c in signal.__table__.columns}
+            for signal in measurement.signals
+        ]
+        return data
+
     def initialize(self):
         """Erstellt die Tabellen basierend auf den Klassen, falls sie nicht existieren."""
         Base.metadata.create_all(self.engine)
