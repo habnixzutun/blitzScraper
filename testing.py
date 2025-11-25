@@ -1,6 +1,8 @@
+from dotenv import load_dotenv
 from database_helper import DBHelper
 import os
 
+load_dotenv()
 pw = os.getenv("PASSWD")
 usr = os.getenv("USR")
 server = os.getenv("SERVER")  # domain or ip
@@ -24,11 +26,12 @@ def main():
 
 
     print("\n--- Hole alle Einträge ---")
-    len_entries = db.get_row_count()
-    print(f"Insgesamt {len_entries} Einträge gefunden.")
+    db.get_row_by_id(234)
+    #len_entries = db.get_row_count()
+    #print(f"Insgesamt {len_entries} Einträge gefunden.")
 
-    size_pretty = db.get_database_size(pretty=True)
-    print(f"Die Datenbankgröße beträgt: {size_pretty}")
+    #size_pretty = db.get_database_size(pretty=True)
+    #print(f"Die Datenbankgröße beträgt: {size_pretty}")
 
     """
     if all_entries:

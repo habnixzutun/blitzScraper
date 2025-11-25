@@ -1,8 +1,8 @@
 #!/usr/bin/python
 import os
-
 import websocket
 import rel
+from dotenv import load_dotenv
 from database_helper import *
 import json
 
@@ -78,6 +78,7 @@ def main():
 
 
 if __name__ == '__main__':
+    load_dotenv()
     pw = os.getenv("PASSWD")
     usr = os.getenv("USR")
     server = os.getenv("SERVER")  # domain or ip
