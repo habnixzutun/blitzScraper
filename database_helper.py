@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Float, BigInteger, ForeignKey, text
+from sqlalchemy import create_engine, Column, Integer, Float, BigInteger, ForeignKey, text, inspect
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, joinedload
 
 # Basisklasse für unsere ORM-Modelle
@@ -168,3 +168,19 @@ class DBHelper:
             size = result.scalar_one()
 
         return size
+    def check_schema_exists(self):
+        inspector = inspect(self.engine)
+
+        table_names = inspector.get_table_names()
+        if 'measurements' not in table_names or 'signals' not in table_names:
+            print("Info: Mindestens eine der Tabellen ('measurements', 'signals') fehlt.")
+            return False
+
+        foreign_keys = inspector.get_foreign_keys('signals')
+        for fk in foreign_keys:
+            if fk['referred_table'] == 'measurements' and 'measurement_id' in fk['constrained_columns']:
+                print("Info: Schema (Tabellen und Beziehung) ist vollständig vorhanden.")
+                return True
+
+        print("Info: Tabellen existieren, aber die Fremdschlüsselbeziehung fehlt.")
+        return False

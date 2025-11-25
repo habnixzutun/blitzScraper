@@ -84,7 +84,10 @@ if __name__ == '__main__':
     server = os.getenv("SERVER")  # domain or ip
     port = os.getenv("PORT")
     db_name = os.getenv("DB_NAME")
-
     db_url = f"postgresql+psycopg2://{usr}:{pw}@{server}:{port}/{db_name}"
     db = DBHelper(db_url)
+    if not db.check_schema_exists():
+        print("Reinitializing...")
+        db.clear()
+        db.initialize()
     main()
