@@ -88,6 +88,5 @@ if __name__ == '__main__':
     db = DBHelper(db_url)
     if not db.check_schema_exists():
         print("Reinitializing...")
-        db.clear()
         db.initialize()
     main()
